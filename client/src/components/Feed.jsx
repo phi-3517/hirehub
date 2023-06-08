@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Container, Row, Col } from "react-bootstrap";
-import UploadModal from "./CV";
+import UploadModal from "./CV.jsx";
 import JobCard from "./JobList";
 import SearchBar from "./Search";
 import Post from "./NewJob";
