@@ -6,29 +6,38 @@ on:
 
 jobs:
   build:
-
     runs-on: self-hosted
 
     strategy:
       matrix:
         node-version: [16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
     - uses: actions/checkout@v3
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 
-          directory: 'hirehub/client/.npm' # cache location is in the hirehub/client subfolder
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+
+    - name: Get cache directory path
+      id: npm-cache
+      run: |
+        echo "::set-output name=dir::$(npm config get cache)"
+      
+    - name: Cache Node.js modules
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.npm-cache.outputs.dir }}
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
     - name: Change directory and install dependencies
       run: |
         cd hirehub/client
         npm ci
+      
     - name: Build
       run: |
         cd hirehub/client
